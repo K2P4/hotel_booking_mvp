@@ -1,12 +1,11 @@
 import { getDashboardStats } from '@/actions/dashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/utils/format';
-import { Users, Bed, Calendar, CheckCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { Users, Bed, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default async function AdminDashboard() {
   const { stats, error } = await getDashboardStats();
-  if (error) toast.error(error);
 
   const statCards = [
     {
@@ -45,6 +44,14 @@ export default async function AdminDashboard() {
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <p className="text-muted-foreground mt-2">Overview of your hotel management system</p>
       </div>
+
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Stats Card  */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

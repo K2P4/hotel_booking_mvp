@@ -1,12 +1,9 @@
 import { createClient } from '@/app/lib/supabase/server';
 import { RoomForm } from '@/components/admin/room-form';
-import { toast } from 'sonner';
 
 export default async function EditRoomPage({ params }: { params: { id: string } }) {
   const supabase = await createClient();
-  const { data: room, error } = await supabase.from('rooms').select('*').eq('id', params.id).single();
-
-  if (error) toast.error(error);
+  const { data: room } = await supabase.from('rooms').select('*').eq('id', params.id).single();
 
   return (
     <div className="space-y-6">

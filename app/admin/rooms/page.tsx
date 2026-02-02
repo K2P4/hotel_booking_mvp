@@ -1,16 +1,12 @@
 import { getAllRooms } from '@/actions/rooms';
 import { RoomTable } from '@/components/admin/room-table';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { AlertCircle, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { toast } from 'sonner';
 
 export default async function AdminUsersPage() {
   const { rooms, error } = await getAllRooms();
-
-  if (error) {
-    toast.error(error);
-  }
 
   return (
     <div className="space-y-6">
@@ -26,6 +22,14 @@ export default async function AdminUsersPage() {
           </Button>
         </Link>
       </div>
+
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {rooms?.length == 0 ? (
         <div className="text-center py-12 border rounded-lg bg-white">
