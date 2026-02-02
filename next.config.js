@@ -21,7 +21,6 @@ const nextConfig = {
   output: 'standalone',
 
   experimental: {
-    serverActions: true,
     optimizePackageImports: ['lucide-react', 'date-fns', '@supabase/supabase-js'],
   },
 

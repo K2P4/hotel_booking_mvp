@@ -17,6 +17,20 @@ export async function getAllRooms() {
   return { rooms: data, error: null };
 }
 
+
+export async function getDetailRoom(roomId:string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from('rooms').select('*').eq('id', roomId).eq('is_active', true).single();
+
+  if (error) {
+    return { room: null, error: error.message };
+  }
+
+  return { room: data, error: null };
+}
+
+
+
 export async function createRoom(formData: CreateRoomInput) {
   const { isAdmin } = await checkAdminAccess();
   if (!isAdmin) {

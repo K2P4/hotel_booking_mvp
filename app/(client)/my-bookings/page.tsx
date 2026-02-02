@@ -3,14 +3,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin } from 'lucide-react';
 import { formatDate, formatPrice } from '@/utils/format';
-import { createClient } from '@/app/lib/supabase/server';
+import { getUserBooking } from '@/actions/bookings';
 
 export default async function MyBookingsPage() {
-  const supabase = createClient();
-
-  const {data: { user }} = await supabase.auth.getUser();
-
-  const { data: bookings } = await supabase.from('bookings').select(`*,rooms (  id,  name,   price_per_night `).eq('user_id', user?.id).order('created_at', { ascending: false });
+  const { bookings } = await getUserBooking();
 
   return (
     <div className="min-h-screen bg-slate-50">

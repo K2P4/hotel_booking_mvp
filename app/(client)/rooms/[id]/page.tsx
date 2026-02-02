@@ -2,15 +2,16 @@ import Link from 'next/link';
 import { BookingForm } from '@/components/booking-form';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Users, Bed } from 'lucide-react';
-import { createClient } from '@/app/lib/supabase/server';
+import { getDetailRoom } from '@/actions/rooms';
+import { toast } from 'sonner';
 
 interface RoomPageProps {
   params: { id: string };
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {
-  const supabase = createClient();
-  const { data: room } = await supabase.from('rooms').select('*').eq('id', params.id).eq('is_active', true).single();
+  const { room,error } = await getDetailRoom(params.id);
+  if(error) toast.error(error)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -40,10 +41,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
 
               <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">About this room</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  Experience ultimate comfort in our {room.name}. This beautifully appointed room features modern amenities and elegant design to ensure a memorable stay. Perfect for both business and
-                  leisure travelers, offering a peaceful retreat with all the conveniences you need.
-                </p>
+                <p className="text-muted-foreground leading-relaxed">Experience ultimate comfort in our {room.name}. This beautifully appointed room features modern amenities and elegant design.</p>
               </div>
 
               <div className="mb-8">
@@ -51,7 +49,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
                 <div className="grid grid-cols-2 gap-4">
                   {['Free Wi-Fi', 'Air Conditioning', 'Flat-screen TV', 'Mini Bar', 'Room Service', 'Daily Housekeeping', 'Safe', 'Coffee Maker'].map((amenity) => (
                     <div key={amenity} className="flex items-center space-x-2 text-muted-foreground">
-                      <div className="w-2 h-2 bg-slate-900 rounded-full"></div>
+                      <div className="w-2 h-2 bg-slate-900 rounded-full" />
                       <span>{amenity}</span>
                     </div>
                   ))}
