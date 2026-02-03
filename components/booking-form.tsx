@@ -16,48 +16,61 @@ interface BookingFormProps {
   pricePerNight: number;
 }
 
+const DAY_MS = 1000 * 60 * 60 * 24;
+
+function getNights(checkIn: string, checkOut: string) {
+  if (!checkIn || !checkOut) return 0;
+  const diff = new Date(checkOut).getTime() - new Date(checkIn).getTime();
+  return Math.ceil(diff / DAY_MS);
+}
+
 export function BookingForm({ roomId, pricePerNight }: BookingFormProps) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
 
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
-  const tomorrow = useMemo(() => new Date(Date.now() + 86400000).toISOString().split('T')[0], []);
+  const tomorrow = useMemo(() => new Date(Date.now() + DAY_MS).toISOString().split('T')[0], []);
 
-  const nights = useMemo(() => {
-    if (!checkIn || !checkOut) return 0;
-    return Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
-  }, [checkIn, checkOut]);
+  const nights = getNights(checkIn, checkOut);
+  const totalPrice = nights > 0 ? nights * pricePerNight : 0;
 
-  const totalPrice = useMemo(() => {
-    return nights > 0 ? nights * pricePerNight : 0;
-  }, [nights, pricePerNight]);
+  function validateDates() {
+    if (!checkIn || !checkOut) return 'Please select both dates';
+    if (new Date(checkIn) >= new Date(checkOut)) {
+      return 'Check-out must be after check-in';
+    }
+    return null;
+  }
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      if (!checkIn || !checkOut) {
-        throw new Error('Please select both dates');
-      }
-
-      if (new Date(checkIn) >= new Date(checkOut)) {
-        throw new Error('Check-out must be after check-in');
-      }
-
-      return createBooking({ roomId, checkIn, checkOut, totalPrice });
-    },
+    mutationFn: createBooking,
     onSuccess: (result) => {
       if (result?.error) {
         toast.error(result.error);
         return;
       }
-
       toast.success('Booking confirmed 🎉');
     },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    mutation.mutate();
-  };
+
+    const error = validateDates();
+    if (error) {
+      toast.error(error);
+      return;
+    }
+
+    mutation.mutate({
+      roomId,
+      checkIn,
+      checkOut,
+      totalPrice,
+    });
+  }
+
+  const isDisabled = mutation.isPending || !checkIn || !checkOut || nights <= 0;
 
   return (
     <Card className="sticky top-4">
@@ -71,16 +84,14 @@ export function BookingForm({ roomId, pricePerNight }: BookingFormProps) {
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Check-in */}
           <div className="space-y-2">
             <Label htmlFor="check_in">Check-In Date</Label>
-            <Input id="check_in" type="date" min={today} value={checkIn} onChange={(e) => setCheckIn(e.target.value)} disabled={mutation.isPending} />
+            <Input id="check_in" type="date" min={today} value={checkIn} disabled={mutation.isPending} onChange={(e) => setCheckIn(e.target.value)} />
           </div>
 
-          {/* Check-out */}
           <div className="space-y-2">
             <Label htmlFor="check_out">Check-Out Date</Label>
-            <Input id="check_out" type="date" min={checkIn || tomorrow} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} disabled={mutation.isPending} />
+            <Input id="check_out" type="date" min={checkIn || tomorrow} value={checkOut} disabled={mutation.isPending} onChange={(e) => setCheckOut(e.target.value)} />
           </div>
 
           {totalPrice > 0 && (
@@ -99,7 +110,7 @@ export function BookingForm({ roomId, pricePerNight }: BookingFormProps) {
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={mutation.isPending || !checkIn || !checkOut || nights <= 0}>
+          <Button type="submit" className="w-full" disabled={isDisabled}>
             {mutation.isPending ? 'Booking...' : 'Confirm Booking'}
           </Button>
         </form>
