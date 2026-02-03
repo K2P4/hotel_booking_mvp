@@ -1,9 +1,8 @@
 import { RoomCard } from '@/components/room-card';
-import { createClient } from '../lib/supabase/server';
+import { getAllRooms } from '@/actions/rooms';
 
 export default async function HomePage() {
-  const supabase = createClient();
-  const { data: rooms } = await supabase.from('rooms').select('*').eq('is_active', true).order('price_per_night', { ascending: true });
+  const { data } = await getAllRooms(true);
 
   return (
     <div className="min-h-screen ">
@@ -13,9 +12,9 @@ export default async function HomePage() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Discover our carefully curated collection of rooms designed for comfort</p>
         </div>
 
-        {rooms && rooms.length > 0 ? (
+        {data && data.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map((room) => (
+            {data.map((room) => (
               <RoomCard key={room.id} id={room.id} name={room.name} pricePerNight={room.price_per_night} maxGuests={room.max_guests} bedRoom={room.bed_room} />
             ))}
           </div>

@@ -1,27 +1,31 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin } from 'lucide-react';
+import { AlertCircle, Calendar, MapPin } from 'lucide-react';
 import { formatDate, formatPrice } from '@/utils/format';
 import { getUserBooking } from '@/actions/bookings';
 
 export default async function MyBookingsPage() {
-  const { bookings } = await getUserBooking();
+  const { data, error } = await getUserBooking();
 
   return (
     <div className="min-h-screen bg-slate-50">
       <main className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">My Bookings</h1>
-          <p className="text-muted-foreground">View and manage your hotel reservations</p>
-        </div>
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-        {bookings && bookings.length > 0 ? (
+        {data && data.length > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle>All Reservations</CardTitle>
               <CardDescription>
-                You have {bookings.length} {bookings.length === 1 ? 'booking' : 'bookings'}
+                You have {data.length} {data.length === 1 ? 'booking' : 'bookings'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -38,7 +42,7 @@ export default async function MyBookingsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {bookings.map((booking: any) => {
+                    {data?.map((booking: any) => {
                       const nights = Math.ceil((new Date(booking.check_out).getTime() - new Date(booking.check_in).getTime()) / (1000 * 60 * 60 * 24));
                       return (
                         <TableRow key={booking.id}>
@@ -65,7 +69,7 @@ export default async function MyBookingsPage() {
                           </TableCell>
                           <TableCell className="font-semibold">{formatPrice(booking.total_price)}</TableCell>
                           <TableCell>
-                            <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>{booking.status}</Badge>
+                            <Badge variant={booking.status === 'confirmed' ? 'default' : 'destructive'}>{booking.status}</Badge>
                           </TableCell>
                         </TableRow>
                       );

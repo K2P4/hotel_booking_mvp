@@ -32,7 +32,6 @@ export function BookingForm({ roomId, pricePerNight }: BookingFormProps) {
     return nights > 0 ? nights * pricePerNight : 0;
   }, [nights, pricePerNight]);
 
-
   const mutation = useMutation({
     mutationFn: async () => {
       if (!checkIn || !checkOut) {
@@ -43,13 +42,7 @@ export function BookingForm({ roomId, pricePerNight }: BookingFormProps) {
         throw new Error('Check-out must be after check-in');
       }
 
-      const formData = new FormData();
-      formData.append('room_id', roomId);
-      formData.append('check_in', checkIn);
-      formData.append('check_out', checkOut);
-      formData.append('total_price', String(totalPrice));
-
-      return createBooking(formData);
+      return createBooking({ roomId, checkIn, checkOut, totalPrice });
     },
     onSuccess: (result) => {
       if (result?.error) {
@@ -59,17 +52,12 @@ export function BookingForm({ roomId, pricePerNight }: BookingFormProps) {
 
       toast.success('Booking confirmed 🎉');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Booking failed');
-    },
   });
-
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutation.mutate();
   };
-
 
   return (
     <Card className="sticky top-4">

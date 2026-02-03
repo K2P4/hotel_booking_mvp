@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutDashboard, Bed, Users } from 'lucide-react';
+import { LayoutDashboard, Bed, Users, CalendarCheck } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
@@ -14,6 +14,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       label: 'Rooms',
       icon: Bed,
       description: 'Manage Rooms',
+    },
+    {
+      href: '/admin/bookings',
+      label: 'Bookings',
+      icon: CalendarCheck,
+      description: 'Check Bookings',
     },
     {
       href: '/admin/users',

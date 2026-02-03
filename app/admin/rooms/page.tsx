@@ -1,12 +1,12 @@
 import { getAllRooms } from '@/actions/rooms';
-import { RoomTable } from '@/components/admin/room-table';
+import { RoomList } from '@/components/admin/room-list';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminUsersPage() {
-  const { rooms, error } = await getAllRooms();
+  const { data, error } = await getAllRooms();
 
   return (
     <div className="space-y-6">
@@ -31,12 +31,12 @@ export default async function AdminUsersPage() {
         </Alert>
       )}
 
-      {rooms?.length == 0 ? (
+      {data?.length == 0 ? (
         <div className="text-center py-12 border rounded-lg bg-white">
           <p className="text-muted-foreground">No rooms found</p>
         </div>
       ) : (
-        <RoomTable rooms={rooms || []} />
+        <RoomList rooms={data || []} />
       )}
     </div>
   );

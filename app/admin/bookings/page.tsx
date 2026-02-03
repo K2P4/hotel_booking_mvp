@@ -1,16 +1,16 @@
-import { getAllUsers } from '@/actions/users';
-import { UserList } from '@/components/admin/user-list';
+import { getAllBookings } from '@/actions/bookings';
+import { BookingList } from '@/components/admin/booking-list';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-export default async function AdminUsersPage() {
-  const { data, error } = await getAllUsers();
+export default async function BookingPage() {
+  const { data, error } = await getAllBookings();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">User Management</h1>
-        <p className="text-muted-foreground mt-2">View all registered users and their details</p>
+        <h1 className="text-3xl font-bold">Booking Management</h1>
+        <p className="text-muted-foreground mt-2">View all users hotel rooms bookings </p>
       </div>
 
       {error && (
@@ -26,7 +26,7 @@ export default async function AdminUsersPage() {
           <p className="text-muted-foreground">No data found</p>
         </div>
       ) : (
-        <UserList users={data || []} />
+        <BookingList bookings={data || []} />
       )}
     </div>
   );

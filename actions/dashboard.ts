@@ -1,12 +1,9 @@
 import { createClient } from '@/app/lib/supabase/server';
-import { checkAdminAccess } from './auth';
+import {requireAdmin } from './auth';
 
 export async function getDashboardStats() {
-  const { isAdmin } = await checkAdminAccess();
-  if (!isAdmin) {
-    return { stats: null, error: 'Unauthorized: Admin access required' };
-  }
 
+  await requireAdmin();
   const supabase = await createClient();
   const today = new Date().toISOString().slice(0, 10);
 
@@ -16,7 +13,7 @@ export async function getDashboardStats() {
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('bookings').select('*', { count: 'exact', head: true }),
     supabase.from('bookings').select('*', { count: 'exact', head: true }).gte('check_in', today),
-    supabase.from('bookings').select(`  id,  check_in,  check_out,  total_price,  status,  created_at,  rooms (name),  profiles (full_name)`).order('created_at', { ascending: false }).limit(5),
+    supabase.from('bookings').select(`  id,  check_in,  check_out,  total_price,  status,  created_at,  rooms (name),  profiles (full_name)`).order('created_at', { ascending: false }).limit(3),
   ]);
 
   return {

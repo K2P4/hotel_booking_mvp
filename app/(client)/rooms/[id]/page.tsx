@@ -10,7 +10,7 @@ interface RoomPageProps {
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {
-  const { room, error } = await getDetailRoom(params.id);
+  const { data, error } = await getDetailRoom(params.id);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -30,16 +30,16 @@ export default async function RoomPage({ params }: RoomPageProps) {
           </Button>
         </Link>
 
-        {room && (
+        {data && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg p-8 shadow-sm">
-                <h1 className="text-3xl font-bold text-slate-900 mb-4">{room.name}</h1>
+                <h1 className="text-3xl font-bold text-slate-900 mb-4">{data.name}</h1>
 
                 <div className="flex items-center space-x-6 mb-8 text-muted-foreground">
                   <div className="flex items-center space-x-2">
                     <Users className="w-5 h-5" />
-                    <span>Up to {room.max_guests} guests</span>
+                    <span>Up to {data.max_guests} guests</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Bed className="w-5 h-5" />
@@ -48,8 +48,8 @@ export default async function RoomPage({ params }: RoomPageProps) {
                 </div>
 
                 <div className="mb-8">
-                  <h2 className="text-xl font-semibold mb-4">About this room</h2>
-                  <p className="text-muted-foreground leading-relaxed">Experience ultimate comfort in our {room.name}. This beautifully appointed room features modern amenities and elegant design.</p>
+                  <h2 className="text-xl font-semibold mb-4">About this data</h2>
+                  <p className="text-muted-foreground leading-relaxed">Experience ultimate comfort in our {data.name}. This beautifully appointed data features modern amenities and elegant design.</p>
                 </div>
 
                 <div className="mb-8">
@@ -67,7 +67,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
             </div>
 
             <div className="lg:col-span-1">
-              <BookingForm roomId={room.id} pricePerNight={room.price_per_night} />
+              <BookingForm roomId={data.id} pricePerNight={data.price_per_night} />
             </div>
           </div>
         )}

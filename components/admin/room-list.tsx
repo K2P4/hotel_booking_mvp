@@ -19,7 +19,7 @@ type RoomTableProps = {
   rooms: Room[];
 };
 
-export function RoomTable({ rooms }: RoomTableProps) {
+export function RoomList({ rooms }: RoomTableProps) {
   const queryClient = useQueryClient();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -39,24 +39,18 @@ export function RoomTable({ rooms }: RoomTableProps) {
 
       queryClient.invalidateQueries({ queryKey: ['rooms'] });
     },
-    onError: () => {
-      toast.error('Something went wrong while deleting the room');
-    },
   });
 
   const toggleMutation = useMutation({
     mutationFn: ({ roomId, isActive }: { roomId: string; isActive: boolean }) => toggleRoomAvailability(roomId, isActive),
     onSuccess: (result) => {
-      if (!result.success) {
+      if ('error' in result && result.error) {
         toast.error(result.error ?? 'Failed to update room availability');
         return;
       }
 
       toast.success('Room availability updated');
       queryClient.invalidateQueries({ queryKey: ['rooms'] });
-    },
-    onError: () => {
-      toast.error('Something went wrong while updating availability');
     },
   });
 
@@ -116,7 +110,7 @@ export function RoomTable({ rooms }: RoomTableProps) {
                       <TableCell>{room.max_guests}</TableCell>
 
                       <TableCell>
-                        <Badge variant={room.is_active ? 'default' : 'secondary'}>{room.is_active ? 'Active' : 'Inactive'}</Badge>
+                        <Badge variant={room.is_active ? 'default' : 'destructive'}>{room.is_active ? 'Active' : 'Inactive'}</Badge>
                       </TableCell>
 
                       <TableCell>
@@ -130,7 +124,7 @@ export function RoomTable({ rooms }: RoomTableProps) {
                               <Edit className="h-4 w-4" />
                             </Button>
                           </Link>
-{/* 
+                          {/* 
                           <Button variant="outline" size="sm" onClick={() => handleDeleteClick(room)} disabled={isRowLoading(room.id)}>
                             {deleteMutation.isPending && deleteMutation.variables === room.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-red-500" />}
                           </Button> */}

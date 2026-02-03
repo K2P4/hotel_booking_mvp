@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from "@/app/lib/supabase/server";
+import { createClient } from '@/app/lib/supabase/server';
 
 export async function loginClient(email: string, password: string) {
   const supabase = createClient();
@@ -22,7 +22,7 @@ export async function loginClient(email: string, password: string) {
 }
 
 export async function signupClient(email: string, password: string, fullName: string) {
-  const supabase =  createClient();
+  const supabase = createClient();
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -52,10 +52,7 @@ export async function signupClient(email: string, password: string, fullName: st
 export async function checkAdminAccess() {
   const supabase = createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const {data: { user },error: authError} = await supabase.auth.getUser();
 
   if (authError || !user) {
     return { isAdmin: false, error: 'Not authenticated' };
@@ -73,4 +70,9 @@ export async function checkAdminAccess() {
 export async function logoutClient() {
   const supabase = createClient();
   await supabase.auth.signOut();
+}
+
+export async function requireAdmin() {
+  const { isAdmin } = await checkAdminAccess();
+  if (!isAdmin) throw new Error('Unauthorized: Admin access required');
 }
