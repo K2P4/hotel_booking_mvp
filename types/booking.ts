@@ -4,12 +4,8 @@ export interface Booking {
   check_out?: string;
   total_price?: number;
   status: string;
-  room: {
-    name: string;
-  }[];
-  user: {
-    full_name: string;
-  }[];
+  room: {name: string;}[];
+  user: {full_name: string;}[];
 }
 
 export interface CreateBookingInput {

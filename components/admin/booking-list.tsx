@@ -37,8 +37,8 @@ export function BookingList({ bookings }: BookingListProps) {
         <TableBody>
           {bookings.map((booking) => (
             <TableRow key={booking.id}>
-              <TableCell className="font-medium">{booking.room.name}</TableCell>
-              <TableCell>{booking.user.full_name}</TableCell>
+              <TableCell className="font-medium"> {booking.room?.[0]?.name ?? ''}</TableCell>
+              <TableCell> {booking.user?.[0]?.full_name ?? ''}</TableCell>
               <TableCell>{formatDate(booking.check_in || '')}</TableCell>
               <TableCell>{formatDate(booking.check_out || '')}</TableCell>
               <TableCell>${booking.total_price?.toFixed(1) || '0'}</TableCell>
